@@ -1,0 +1,77 @@
+<html>
+
+<head>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+        crossorigin="anonymous">
+
+    <!-- Custom CSS File -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Socket IO -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+
+    <script>
+        var socket = io.connect("http://localhost:8080/");
+        socket.on("welcome", function (message) {
+            console.log("Welcome! Current date is:", message.date);
+        });
+
+        socket.emit("welcomeServer", {
+            name: "Test User"
+        });
+
+        $(document).ready(function () {
+            socket.on("newMessage", function (data) {
+                console.log("New message", data);
+                $("#chatList").append(
+                    $('<div class="incoming message"></div>').append(
+                        $('<div class="row"></div>').append(
+                            $('<span class="username"></span>').text(data.username + ":"),
+                            $('<p></p>').text(data.message)
+                        ),
+                        $('<span class="time-right"></span>').text(("0" + new Date().getHours()).slice(-2) + ":" + ("0" + new Date().getMinutes()).slice(-2))
+                    )
+                );
+            });
+
+            $("#submit").click(function () {
+                var username = $("#username").val();
+                var message = $("#message").val();
+
+                $("#chatList").append(
+                    $('<div class="outgoing message"></div>').append(
+                        $('<div class="row"></div>').append(
+                            $('<span class="username"></span>').text(username + ":"),
+                            $('<p></p>').text(message)
+                        ),
+                        $('<span class="time-right"></span>').text(("0" + new Date().getHours()).slice(-2) + ":" + ("0" + new Date().getMinutes()).slice(-2))
+                    )
+                );
+
+                socket.emit("message", {
+                    username: username,
+                    message: message
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <h1>Socket.io example</h1>
+    <div class="container">
+        <label>Username: </label>
+        <input id="username" type="text" />
+        <label>Message: </label>
+        <input id="message" type="text" />
+        <button id="submit" class="btn btn-primary">Send!</button>
+
+        <div id="chatList"></div>
+    </div>
+</body>
+
+</html>
