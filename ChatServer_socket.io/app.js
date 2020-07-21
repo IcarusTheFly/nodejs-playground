@@ -5,9 +5,6 @@ var app = express();
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
 
-app.set("view engine", "jade");
-app.set("views", __dirname + "/views");
-
 app.use("/public", express.static("public"));
 
 io.on("connection", function (socket) {
