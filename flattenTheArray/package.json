@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "assert": "2.0.0",
-    "mocha": "9.0.1"
+    "mocha": "9.2.2"
   }
 }
